@@ -344,7 +344,7 @@ svg {
   left:-28px;
   bottom:-95px;
   /* 奧丁尺寸隨舞台高度等比（566px 舞台＝650px 高，寬高比 0.669 與原圖 1024×1536 一致），各裝置登場比例一致 */
-  --odin-ratio:1.15;
+  --odin-ratio:.9;
   width:calc(var(--scene-h) * var(--odin-ratio) * .669);
   height:calc(var(--scene-h) * var(--odin-ratio));
   z-index:2;
@@ -2010,7 +2010,7 @@ dialog[open] {
     max-width:880px
   }
   .odin-wrap {
-    --odin-ratio:1.18;
+    --odin-ratio:.92;
     bottom:-120px
   }
 }
@@ -2024,7 +2024,7 @@ dialog[open] {
     --shell-pad:27px
   }
   .odin-wrap {
-    --odin-ratio:1.1;
+    --odin-ratio:.88;
     bottom:-35px;
     left:-24px
   }
@@ -2076,7 +2076,7 @@ dialog[open] {
     --chrome-h:228px
   }
   .odin-wrap {
-    --odin-ratio:1;
+    --odin-ratio:.82;
     bottom:0;
     left:-37px
   }
@@ -2234,7 +2234,7 @@ dialog[open] {
     background-position:center,center 62%
   }
   .odin-wrap {
-    --odin-ratio:.85;
+    --odin-ratio:.72;
     left:calc(50% - 165px);
     bottom:auto;
     top:0;
