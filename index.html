@@ -260,7 +260,7 @@ svg {
   position:relative;
   isolation:isolate;
   height:566px;
-  overflow:hidden;
+  overflow:clip; /* 用 clip 而非 hidden：舞台不可被程式捲動（聚焦按鈕時瀏覽器不會把內容捲走） */
   height:var(--scene-h);
   background-color:#102b4a;
   /* 上層為對比遮罩，底層為極光北境門庭背景圖（source/assets/scene-bg.jpg） */
@@ -343,8 +343,10 @@ svg {
   position:absolute;
   left:-28px;
   bottom:-95px;
-  width:435px;
-  height:650px;
+  /* 奧丁尺寸隨舞台高度等比（566px 舞台＝650px 高，寬高比 0.669 與原圖 1024×1536 一致），各裝置登場比例一致 */
+  --odin-ratio:1.15;
+  width:calc(var(--scene-h) * var(--odin-ratio) * .669);
+  height:calc(var(--scene-h) * var(--odin-ratio));
   z-index:2;
   pointer-events:none;
   transform-origin:40% 78%;
@@ -2008,8 +2010,7 @@ dialog[open] {
     max-width:880px
   }
   .odin-wrap {
-    width:470px;
-    height:705px;
+    --odin-ratio:1.18;
     bottom:-120px
   }
 }
@@ -2023,8 +2024,7 @@ dialog[open] {
     --shell-pad:27px
   }
   .odin-wrap {
-    width:375px;
-    height:562px;
+    --odin-ratio:1.1;
     bottom:-35px;
     left:-24px
   }
@@ -2076,8 +2076,7 @@ dialog[open] {
     --chrome-h:228px
   }
   .odin-wrap {
-    width:310px;
-    height:465px;
+    --odin-ratio:1;
     bottom:0;
     left:-37px
   }
@@ -2235,8 +2234,7 @@ dialog[open] {
     background-position:center,center 62%
   }
   .odin-wrap {
-    width:270px;
-    height:405px;
+    --odin-ratio:.85;
     left:calc(50% - 165px);
     bottom:auto;
     top:0;
@@ -2920,6 +2918,7 @@ function setOdin(state) { odinState = state; scene.dataset.odin = state; }
 // 奧丁登場位置：讓手掌落在畫面水平中央、上排神力球的球心高度。
 function topRowCenterY() {
   // 球陣在閒置舞台不排版，先以就位版面（不顯示）量一次上排球心。
+  scene.scrollTop = 0; // 保險：量測前確保舞台沒有被捲動
   const prev = scene.dataset.stage; scene.dataset.stage = 'set'; scene.classList.add('measuring');
   const orb = $('orb-grid').firstElementChild.querySelector('.orb-mover').getBoundingClientRect(), box = scene.getBoundingClientRect();
   scene.dataset.stage = prev; scene.classList.remove('measuring');
