@@ -915,23 +915,23 @@ h1 {
   border-color:#fff
 }
 
-/* 滑鼠移到（或鍵盤聚焦）神力球：呼吸閃爍以 2.2 秒節奏起伏——亮點集中在球體左上（原本的反光處），
-   外光暈也偏向左上；球體略微放大，光環同步脈動 */
-.orb-button:enabled:hover .orb-glass,.orb-button:enabled:focus-visible .orb-glass {
-  animation:orbBreath 2.2s ease-in-out infinite
+/* 輪流呼吸：就緒時由 game.js 每輪隨機挑 3 顆互不相鄰的球加上 .breathe，呼吸一次（2.2 秒）後換下一組。
+   亮點集中在球體左上（原本的反光處），外光暈偏向左上，球體略微放大，光環同步脈動 */
+.orb-button.breathe .orb-glass {
+  animation:orbBreath 2.2s ease-in-out 1
 }
 
-.orb-button:enabled:hover .orb-shine,.orb-button:enabled:focus-visible .orb-shine {
-  animation:shineBreath 2.2s ease-in-out infinite
+.orb-button.breathe .orb-shine {
+  animation:shineBreath 2.2s ease-in-out 1
 }
 
 @keyframes shineBreath {
-  0%,100% { opacity:.25 }
+  0%,100% { opacity:0 }
   50% { opacity:1 }
 }
 
-.orb-button:enabled:hover .orb-ring,.orb-button:enabled:focus-visible .orb-ring {
-  animation:ringBreath 2.2s ease-in-out infinite
+.orb-button.breathe .orb-ring {
+  animation:ringBreath 2.2s ease-in-out 1
 }
 
 @keyframes orbBreath {
@@ -2760,7 +2760,7 @@ function toast(message) {
   document.body.append(el);
   toastTimer = setTimeout(() => el.remove(), 3200);
 }
-function setPhase(next) { phase = next; scene.dataset.phase = next; renderControls(); scheduleSparks(); }
+function setPhase(next) { phase = next; scene.dataset.phase = next; renderControls(); scheduleSparks(); scheduleBreath(); }
 // 舞台：bare＝只有背景與置中按鈕；set＝標題與球陣就位。
 function setStage(state) { scene.dataset.stage = state; $('summon-button').classList.remove('gone', 'shake-small', 'shake-big', 'pop'); if (state === 'set' && typeof layoutOrbs === 'function') layoutOrbs(); }
 
@@ -2780,6 +2780,25 @@ function scheduleSparks() {
   if (phase !== 'ready' || reducedMotion) { document.querySelectorAll('.orb-spark').forEach(el => el.remove()); return; }
   sparkOrb(Math.floor(Math.random() * balls.length));
   sparkTimer = setTimeout(scheduleSparks, 450 + Math.random() * 500);
+}
+// 輪流呼吸：就緒時每 2.4 秒隨機挑 3 顆互不相鄰（依目前排列的鄰居關係）的球呼吸一次，盡量避開上一組
+let breathTimer, lastBreath = [];
+function scheduleBreath() {
+  clearTimeout(breathTimer);
+  balls.forEach(b => b.classList.remove('breathe'));
+  if (phase !== 'ready' || reducedMotion) { lastBreath = []; return; }
+  const pairs = archQuery.matches ? archNeighbours : gridNeighbours;
+  const near = (a, b) => pairs.some(([x, y]) => (x === a && y === b) || (x === b && y === a));
+  let pick = null;
+  for (let tries = 0; tries < 300 && !pick; tries++) {
+    const order = shuffled(balls.map((_, i) => i)), chosen = [];
+    for (const i of order) { if (chosen.length === 3) break; if (tries < 200 && lastBreath.includes(i)) continue; if (chosen.every(c => !near(c, i))) chosen.push(i); }
+    if (chosen.length === 3) pick = chosen;
+  }
+  lastBreath = pick || [];
+  void balls[0].offsetWidth;
+  lastBreath.forEach(i => balls[i].classList.add('breathe'));
+  breathTimer = setTimeout(scheduleBreath, 2400);
 }
 let striking = false; // 雷石遭雷擊的過場中（仍在 idle 階段，但要鎖住所有操作）
 function isAnimating() { return striking || phase === 'entering' || phase === 'summoning' || phase === 'revealing'; }
