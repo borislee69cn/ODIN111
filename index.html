@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b2444">
-  <meta name="description" content="奧丁降臨，神力甦醒。每日登入，從十二顆神力球中選擇你的獎勵，享有十級會員專屬倍數。">
+  <meta name="description" content="奧丁降臨，神力甦醒。每日登入，從十二顆神力球中選擇你的獎勵，十級會員各有專屬獎池。">
   <title>奧丁祝福｜每日登入・神力賜福</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230d3157'/%3E%3Cpath d='M32 8L16 28l16 20 16-20zM16 56l16-12 16 12' fill='none' stroke='%23f8d18d' stroke-width='4'/%3E%3C/svg%3E">
   <style>
@@ -984,6 +984,33 @@ h1 {
 }
 
 
+/* 揭曉後的獎項：上行數字、下行幣別；依幣別上色（星幣金、銀幣銀白、銅幣銅色） */
+.orb-value {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  line-height:1.02
+}
+
+.orb-value b {
+  font-weight:700
+}
+
+.orb-value small {
+  margin-top:2px;
+  font:700 .52em/1 var(--sans);
+  letter-spacing:2px;
+  text-indent:2px
+}
+
+.orb-value.long b {
+  font-size:.82em
+}
+
+.orb-value[data-type="STAR"] { color:#ffe7a6 }
+.orb-value[data-type="SILVER"] { color:#eef4ff }
+.orb-value[data-type="COPPER"] { color:#ffc79a }
+
 .orb-button:after {
   content:"";
   position:absolute;
@@ -1335,6 +1362,22 @@ h1 {
 @keyframes rbIn {
   from { opacity:0; transform:translateX(-18px) }
   to { opacity:1; transform:none }
+}
+
+.rb-unit {
+  margin-left:8px;
+  font:700 .42em var(--sans);
+  letter-spacing:2px;
+  vertical-align:.35em
+}
+
+.rb-total[data-type="SILVER"] .rb-value { color:#eef4ff }
+.rb-total[data-type="COPPER"] .rb-value { color:#ffc79a }
+
+.stat-unit {
+  margin-left:-6px;
+  font-size:14px;
+  color:#a9bdd6
 }
 
 .member-summary {
@@ -2856,24 +2899,21 @@ dialog[open] {
         <div id="flash" class="screen-flash" aria-hidden="true"></div>
       </div>
 
-      <section class="membership" id="membership" aria-label="會員等級加乘">
+      <section class="membership" id="membership" aria-label="會員等級獎池">
         <!-- 報獎列：揭曉後直接在會員列位置顯示，由左至右依序出現，領取按鈕在最右側 -->
         <div class="reward-bar" id="reward-bar" role="region" aria-label="本次神力賜福">
           <div class="rb-orb" id="reward-orb" aria-hidden="true"><span class="orb-glass"><span class="orb-shine"></span><span class="orb-rune" id="reward-orb-name"></span></span></div>
-          <div class="rb-item"><span class="rb-label">神力球獎勵</span><strong class="rb-value" id="reward-base">0</strong></div>
-          <b class="rb-op" aria-hidden="true">×</b>
-          <div class="rb-item"><span class="rb-label" id="reward-tier-label">青銅會員加乘</span><strong class="rb-value" id="reward-factor">10</strong></div>
-          <b class="rb-op" aria-hidden="true">=</b>
-          <div class="rb-item rb-total"><span class="rb-label">本次獲得</span><strong class="rb-value" id="reward-total">0</strong></div>
+          <div class="rb-item"><span class="rb-label">會員獎池</span><strong class="rb-value" id="reward-tier">青銅</strong></div>
+          <div class="rb-item rb-total" id="reward-total-item"><span class="rb-label">本次獲得</span><strong class="rb-value"><span id="reward-total">0</span><small class="rb-unit" id="reward-unit">星幣</small></strong></div>
           <button class="summon-button claim-button" id="claim-button"><span>領取獎勵</span></button>
         </div>
         <div class="member-summary">
           <div class="member-icon" id="member-icon"><svg><use href="#i-rune"/></svg></div>
           <div class="stat"><span class="stat-label">會員等級</span><strong id="member-name" class="stat-value tier-value">青銅</strong></div>
           <span class="summary-divider"></span>
-          <div class="stat"><span class="stat-label">專屬加乘</span><strong id="member-multiplier" class="stat-value gold-value">×10</strong></div>
+          <div class="stat"><span class="stat-label">星／銀幣中獎率</span><strong id="member-multiplier" class="stat-value gold-value">18%</strong></div>
           <span class="summary-divider"></span>
-          <div class="stat"><span class="stat-label">本級最高獎勵</span><strong id="max-reward" class="stat-value">500,000</strong></div>
+          <div class="stat"><span class="stat-label">本級最高獎勵</span><strong id="max-reward" class="stat-value">2,800</strong><span class="stat-unit">星幣</span></div>
         </div>
         <div class="tier-list" id="tier-list" role="group" aria-label="選擇會員等級"></div>
       </section>
@@ -2887,7 +2927,7 @@ dialog[open] {
   <dialog id="rules-dialog" class="panel-dialog" aria-labelledby="rules-title">
     <button class="dialog-close icon-button" data-close="rules-dialog" aria-label="關閉規則"><svg><use href="#i-close"/></svg></button>
     <span class="eyebrow">HOW TO PLAY</span><h2 id="rules-title">接受奧丁的賜福</h2>
-    <ol class="rules-list"><li><span>01</span><div><strong>召喚神力</strong><p>雷石受雷擊炸開，召喚十二顆神力球。</p></div></li><li><span>02</span><div><strong>選擇命運</strong><p>任選一顆，每顆球獨立產生 1～50,000 的整數獎項；每個數值等機率，可能重複。</p></div></li><li><span>03</span><div><strong>會員加乘</strong><p>最終獎勵＝球內數值 × 會員倍數。青銅 ×10 至星曜 ×100，最高獎勵為 5,000,000。</p></div></li></ol>
+    <ol class="rules-list"><li><span>01</span><div><strong>召喚神力</strong><p>雷石受雷擊炸開，召喚十二顆神力球。</p></div></li><li><span>02</span><div><strong>選擇命運</strong><p>任選一顆，依會員等級的專屬獎池機率開出星幣、銀幣或銅幣獎項；其餘 11 顆同步揭曉本級的其他獎項。</p></div></li><li><span>03</span><div><strong>會員獎池</strong><p>青銅至星曜共 10 級，等級越高，星／銀幣中獎率與獎額越高（青銅 18% 至星曜 90%）；最高獎項為星曜 20,474,000 星幣。</p></div></li></ol>
     <div class="rules-note"><strong>每日 00:00 重置</strong><p>以台灣時間（UTC+8）計算，每日模式一天一次。球的顏色與位置不影響機率，選中後本次結果即確定。</p></div>
     <p class="prototype-note">互動原型：會員等級可自由切換，獎勵與每日紀錄保存在此瀏覽器，未串接會員帳號或正式發獎系統。自由試玩不消耗每日次數。</p>
     <button class="secondary-button full-width" data-close="rules-dialog">開始體驗</button>
@@ -2916,21 +2956,45 @@ dialog[open] {
 'use strict';
 (() => {
 /* ===== 抽獎規則 ===== */
-/* 奧丁神力球：純資料規則。正式接入會員／錢包時，請由伺服器負責抽獎及發獎。 */
+/* 奧丁祝福：純資料規則。正式接入會員／錢包時，請由伺服器負責抽獎及發獎。
+   獎池依「神力賜福_10階級抽獎機率與成本配置表-v4.xlsx › 12格機率矩陣總表」：
+   每個會員等級 12 格獎項（STAR 星幣／SILVER 銀幣／COPPER 銅幣），機率以「每 100,000 的權重」整數保存，總和必為 100,000。 */
 const TIERS = Object.freeze([
-  { name: '青銅', multiplier: 10, color: '#d9a783', rune: 'ᚠ' },
-  { name: '白銀', multiplier: 20, color: '#d6e4f1', rune: 'ᚢ' },
-  { name: '黃金', multiplier: 30, color: '#ffce70', rune: 'ᚦ' },
-  { name: '白金', multiplier: 40, color: '#bbe9ef', rune: 'ᚨ' },
-  { name: '鉑金', multiplier: 50, color: '#c4d0ff', rune: 'ᚱ' },
-  { name: '鑽石', multiplier: 60, color: '#83e4ff', rune: 'ᚲ' },
-  { name: '彩鑽', multiplier: 70, color: '#f3b2ff', rune: 'ᚷ' },
-  { name: '月曜', multiplier: 80, color: '#b5b5ff', rune: 'ᛗ' },
-  { name: '日曜', multiplier: 90, color: '#ffb56e', rune: 'ᛋ' },
-  { name: '星曜', multiplier: 100, color: '#ffe5a3', rune: 'ᛟ' },
+  { name: '青銅', color: '#d9a783', rune: 'ᚠ' },
+  { name: '白銀', color: '#d6e4f1', rune: 'ᚢ' },
+  { name: '黃金', color: '#ffce70', rune: 'ᚦ' },
+  { name: '白金', color: '#bbe9ef', rune: 'ᚨ' },
+  { name: '鉑金', color: '#c4d0ff', rune: 'ᚱ' },
+  { name: '鑽石', color: '#83e4ff', rune: 'ᚲ' },
+  { name: '彩鑽', color: '#f3b2ff', rune: 'ᚷ' },
+  { name: '月曜', color: '#b5b5ff', rune: 'ᛗ' },
+  { name: '日曜', color: '#ffb56e', rune: 'ᛋ' },
+  { name: '星曜', color: '#ffe5a3', rune: 'ᛟ' },
 ]);
-const CONFIG = Object.freeze({ minPrize: 1, maxPrize: 50000, ballCount: 12, timezone: 'Asia/Taipei' });
-const STORAGE_KEY = 'odin-divine-orbs-v1';
+const CONFIG = Object.freeze({ ballCount: 12, weightTotal: 100000, timezone: 'Asia/Taipei' });
+const STORAGE_KEY = 'odin-divine-orbs-v2';
+const REWARD_TYPES = Object.freeze(['STAR', 'SILVER', 'COPPER']);
+const REWARD_UNIT = Object.freeze({ STAR: '星幣', SILVER: '銀幣', COPPER: '銅幣' });
+// [slot_id, reward_type, amount, weight（機率 × 100,000）]
+const RAW_LOOT = [
+  /* 青銅 */ [[1, 'COPPER', 1000000, 18000], [2, 'STAR', 10, 8000], [3, 'COPPER', 1000000, 18000], [4, 'STAR', 20, 5000], [5, 'COPPER', 1000000, 20000], [6, 'STAR', 30, 3000], [7, 'COPPER', 1000000, 14000], [8, 'STAR', 50, 1490], [9, 'COPPER', 1000000, 12000], [10, 'STAR', 100, 500], [11, 'STAR', 300, 9], [12, 'STAR', 2800, 1]],
+  /* 白銀 */ [[1, 'COPPER', 1500000, 15000], [2, 'SILVER', 200, 10000], [3, 'COPPER', 1500000, 15000], [4, 'SILVER', 500, 8000], [5, 'COPPER', 1500000, 20000], [6, 'STAR', 10, 4000], [7, 'COPPER', 1500000, 15000], [8, 'STAR', 20, 2000], [9, 'COPPER', 1500000, 10000], [10, 'STAR', 100, 800], [11, 'STAR', 500, 180], [12, 'STAR', 24500, 20]],
+  /* 黃金 */ [[1, 'COPPER', 2000000, 15000], [2, 'SILVER', 500, 12000], [3, 'COPPER', 2000000, 15000], [4, 'STAR', 10, 10000], [5, 'COPPER', 2000000, 18000], [6, 'STAR', 25, 5000], [7, 'COPPER', 2000000, 20000], [8, 'STAR', 50, 3000], [9, 'STAR', 100, 1500], [10, 'STAR', 300, 400], [11, 'STAR', 1000, 90], [12, 'STAR', 120500, 10]],
+  /* 白金 */ [[1, 'COPPER', 100000, 20000], [2, 'STAR', 10, 15000], [3, 'COPPER', 100000, 20000], [4, 'STAR', 25, 12000], [5, 'COPPER', 100000, 20000], [6, 'STAR', 50, 7000], [7, 'STAR', 100, 4000], [8, 'STAR', 200, 1200], [9, 'STAR', 500, 500], [10, 'STAR', 1500, 200], [11, 'STAR', 5000, 80], [12, 'STAR', 150500, 20]],
+  /* 柏金 */ [[1, 'COPPER', 30000, 20000], [2, 'STAR', 55, 20000], [3, 'COPPER', 30000, 15000], [4, 'STAR', 100, 15000], [5, 'COPPER', 30000, 15000], [6, 'STAR', 200, 8000], [7, 'STAR', 400, 4000], [8, 'STAR', 800, 2000], [9, 'STAR', 2000, 700], [10, 'STAR', 5000, 200], [11, 'STAR', 15000, 80], [12, 'STAR', 500000, 20]],
+  /* 鑽石 */ [[1, 'COPPER', 20000, 15000], [2, 'STAR', 100, 22000], [3, 'COPPER', 20000, 15000], [4, 'STAR', 200, 18000], [5, 'COPPER', 20000, 10000], [6, 'STAR', 400, 10000], [7, 'STAR', 800, 5000], [8, 'STAR', 1500, 3000], [9, 'STAR', 4000, 1300], [10, 'STAR', 10000, 500], [11, 'STAR', 30000, 150], [12, 'STAR', 780000, 50]],
+  /* 彩鑽 */ [[1, 'COPPER', 20000, 10000], [2, 'STAR', 300, 25000], [3, 'COPPER', 20000, 10000], [4, 'STAR', 600, 20000], [5, 'COPPER', 20000, 10000], [6, 'STAR', 1200, 12000], [7, 'STAR', 2500, 7000], [8, 'STAR', 5000, 4000], [9, 'STAR', 10000, 1300], [10, 'STAR', 25000, 500], [11, 'STAR', 60000, 150], [12, 'STAR', 1986000, 50]],
+  /* 月曜 */ [[1, 'COPPER', 10000, 10000], [2, 'STAR', 1000, 30000], [3, 'COPPER', 10000, 10000], [4, 'STAR', 2000, 25000], [5, 'STAR', 4000, 12000], [6, 'STAR', 8000, 7000], [7, 'STAR', 15000, 3500], [8, 'STAR', 30000, 1500], [9, 'STAR', 60000, 700], [10, 'STAR', 120000, 200], [11, 'STAR', 250000, 80], [12, 'STAR', 10425000, 20]],
+  /* 日曜 */ [[1, 'COPPER', 10000, 8000], [2, 'STAR', 3000, 34975], [3, 'COPPER', 10000, 7000], [4, 'STAR', 6000, 26000], [5, 'STAR', 12000, 12000], [6, 'STAR', 25000, 6000], [7, 'STAR', 50000, 3500], [8, 'STAR', 100000, 1500], [9, 'STAR', 200000, 700], [10, 'STAR', 400000, 200], [11, 'STAR', 800000, 80], [12, 'STAR', 12535000, 45]],
+  /* 星曜 */ [[1, 'COPPER', 10000, 5000], [2, 'STAR', 10000, 34945], [3, 'COPPER', 10000, 5000], [4, 'STAR', 20000, 28000], [5, 'STAR', 40000, 14000], [6, 'STAR', 80000, 7000], [7, 'STAR', 150000, 3500], [8, 'STAR', 300000, 1500], [9, 'STAR', 600000, 700], [10, 'STAR', 1200000, 200], [11, 'STAR', 2500000, 80], [12, 'STAR', 20474000, 75]],
+];
+const LOOT_TABLE = Object.freeze(RAW_LOOT.map((entries, tierIndex) => Object.freeze(entries.map(([slotId, rewardType, amount, weight]) =>
+  Object.freeze({ tierId: tierIndex + 1, slotId, rewardType, amount, weight, probability: weight / CONFIG.weightTotal })))));
+const lootEntry = (tierIndex, slotId) => LOOT_TABLE[tierIndex]?.[slotId - 1] ?? null;
+// 星幣等值：1 星幣 = 100 銀幣，銅幣不計
+const starValue = e => e.rewardType === 'STAR' ? e.amount : e.rewardType === 'SILVER' ? e.amount / 100 : 0;
+const topPrize = tierIndex => LOOT_TABLE[tierIndex][CONFIG.ballCount - 1];
+const starSilverRate = tierIndex => LOOT_TABLE[tierIndex].filter(e => e.rewardType !== 'COPPER').reduce((s, e) => s + e.weight, 0) / CONFIG.weightTotal;
 
 function taipeiDay(date = new Date()) {
   const parts = new Intl.DateTimeFormat('en', { timeZone: CONFIG.timezone, year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(date);
@@ -2940,35 +3004,45 @@ function taipeiDay(date = new Date()) {
 function resetAt(date = new Date()) {
   return new Date(Date.parse(`${taipeiDay(date)}T00:00:00+08:00`) + 86400000);
 }
-function randomPrize(getRandomValues = array => globalThis.crypto.getRandomValues(array)) {
-  const range = CONFIG.maxPrize - CONFIG.minPrize + 1;
-  const limit = Math.floor(0x100000000 / range) * range;
+// 0 ≤ n < max 的均勻整數（拒絕取樣，避免取模偏差）
+function randomInt(max, getRandomValues = array => globalThis.crypto.getRandomValues(array)) {
+  const limit = Math.floor(0x100000000 / max) * max;
   const buffer = new Uint32Array(1);
   do { getRandomValues(buffer); } while (buffer[0] >= limit);
-  return CONFIG.minPrize + (buffer[0] % range);
+  return buffer[0] % max;
 }
-function makeDeck(random = randomPrize) {
-  return Array.from({ length: CONFIG.ballCount }, () => random());
+// 依該等級的權重抽出一格（回傳 slot_id 1～12）
+function drawSlot(tierIndex, roll = randomInt(CONFIG.weightTotal)) {
+  let r = roll;
+  for (const e of LOOT_TABLE[tierIndex]) { if ((r -= e.weight) < 0) return e.slotId; }
+  throw new Error('獎池權重有誤。');
 }
+// 一回合的球陣：被點選的球放入抽中的那格，其餘 11 顆隨機分配其餘 11 格（揭曉時展示本級其他獎項）
+function makeDeck(tierIndex, pickedIndex, rand = randomInt) {
+  const slot = drawSlot(tierIndex, rand(CONFIG.weightTotal));
+  const rest = LOOT_TABLE[tierIndex].map(e => e.slotId).filter(id => id !== slot);
+  for (let i = rest.length - 1; i > 0; i--) { const j = rand(i + 1); [rest[i], rest[j]] = [rest[j], rest[i]]; }
+  return Array.from({ length: CONFIG.ballCount }, (_, i) => i === pickedIndex ? slot : rest.shift());
+}
+const emptyWallet = () => ({ STAR: 0, SILVER: 0, COPPER: 0 });
 function freshState() {
   // 預設為自由試玩；modeChosen 記錄玩家是否手動切換過模式（未切換過的舊存檔會套用新預設）
-  return { version: 1, tierIndex: 0, mode: 'demo', modeChosen: false, sound: true, balance: 0, demoBalance: 0, dailyDraw: null, pending: null, history: [] };
+  return { version: 2, tierIndex: 0, mode: 'demo', modeChosen: false, sound: true, wallet: { daily: emptyWallet(), demo: emptyWallet() }, dailyDraw: null, pending: null, history: [] };
 }
+const validDeck = d => Array.isArray(d) && d.length === CONFIG.ballCount && [...d].sort((a, b) => a - b).every((v, i) => v === i + 1);
 function validRecord(r) {
-  return !!r && typeof r.id === 'string' && ['daily', 'demo'].includes(r.mode)
-    && /^\d{4}-\d{2}-\d{2}$/.test(r.day) && Number.isFinite(Date.parse(r.createdAt))
-    && Number.isInteger(r.tierIndex) && !!TIERS[r.tierIndex]
-    && Number.isInteger(r.ballIndex) && r.ballIndex >= 0 && r.ballIndex < CONFIG.ballCount
-    && Number.isInteger(r.base) && r.base >= CONFIG.minPrize && r.base <= CONFIG.maxPrize
-    && r.total === r.base * TIERS[r.tierIndex].multiplier && typeof r.claimed === 'boolean';
+  if (!r || typeof r.id !== 'string' || !['daily', 'demo'].includes(r.mode) || !/^\d{4}-\d{2}-\d{2}$/.test(r.day) || !Number.isFinite(Date.parse(r.createdAt))) return false;
+  if (!Number.isInteger(r.tierIndex) || !TIERS[r.tierIndex] || !Number.isInteger(r.ballIndex) || r.ballIndex < 0 || r.ballIndex >= CONFIG.ballCount || typeof r.claimed !== 'boolean') return false;
+  const e = lootEntry(r.tierIndex, r.slotId);
+  return !!e && r.rewardType === e.rewardType && r.amount === e.amount && validDeck(r.deck) && r.deck[r.ballIndex] === r.slotId;
 }
 function restoreState(raw) {
   const s = freshState();
-  if (!raw || raw.version !== 1) return s;
+  if (!raw || raw.version !== 2) return s;
   if (Number.isInteger(raw.tierIndex) && TIERS[raw.tierIndex]) s.tierIndex = raw.tierIndex;
   if (raw.modeChosen === true && ['daily', 'demo'].includes(raw.mode)) { s.mode = raw.mode; s.modeChosen = true; }
   if (typeof raw.sound === 'boolean') s.sound = raw.sound;
-  for (const key of ['balance', 'demoBalance']) if (Number.isSafeInteger(raw[key]) && raw[key] >= 0) s[key] = raw[key];
+  for (const mode of ['daily', 'demo']) for (const type of REWARD_TYPES) { const v = raw.wallet?.[mode]?.[type]; if (Number.isSafeInteger(v) && v >= 0) s.wallet[mode][type] = v; }
   s.dailyDraw = validRecord(raw.dailyDraw) && raw.dailyDraw.mode === 'daily' ? raw.dailyDraw : null;
   s.pending = validRecord(raw.pending) && !raw.pending.claimed ? raw.pending : null;
   s.history = Array.isArray(raw.history) ? raw.history.filter(validRecord).slice(0, 30) : [];
@@ -2979,18 +3053,19 @@ function canDraw(s, date = new Date()) {
 }
 function createRound(s, deck, index, date = new Date(), id = globalThis.crypto.randomUUID()) {
   if (!canDraw(s, date)) throw new Error('今日已抽獎，或還有待領取獎勵。');
-  if (!Array.isArray(deck) || deck.length !== CONFIG.ballCount || deck.some(v => !Number.isInteger(v) || v < CONFIG.minPrize || v > CONFIG.maxPrize)) throw new Error('神力球獎項有誤。');
+  if (!TIERS[s.tierIndex]) throw new Error('會員等級有誤。');
+  if (!validDeck(deck)) throw new Error('神力球獎項有誤。');
   if (!Number.isInteger(index) || index < 0 || index >= deck.length) throw new Error('請選擇有效的神力球。');
-  const tier = TIERS[s.tierIndex];
-  if (!tier) throw new Error('會員等級有誤。');
-  const record = { id, day: taipeiDay(date), createdAt: date.toISOString(), mode: s.mode, tierIndex: s.tierIndex, ballIndex: index, base: deck[index], total: deck[index] * tier.multiplier, claimed: false, deck: deck.slice() };
+  const e = lootEntry(s.tierIndex, deck[index]);
+  const record = { id, day: taipeiDay(date), createdAt: date.toISOString(), mode: s.mode, tierIndex: s.tierIndex, ballIndex: index,
+    slotId: e.slotId, rewardType: e.rewardType, amount: e.amount, claimed: false, deck: deck.slice() };
   return { ...s, pending: record, dailyDraw: s.mode === 'daily' ? record : s.dailyDraw, history: [record, ...s.history].slice(0, 30) };
 }
 function claimPending(s) {
   if (!s.pending || s.pending.claimed) return s;
   const record = { ...s.pending, claimed: true };
-  const balanceKey = record.mode === 'demo' ? 'demoBalance' : 'balance';
-  return { ...s, [balanceKey]: s[balanceKey] + record.total, pending: null,
+  const purse = { ...s.wallet[record.mode], [record.rewardType]: s.wallet[record.mode][record.rewardType] + record.amount };
+  return { ...s, wallet: { ...s.wallet, [record.mode]: purse }, pending: null,
     dailyDraw: s.dailyDraw?.id === record.id ? record : s.dailyDraw,
     history: s.history.map(r => r.id === record.id ? record : r) };
 }
@@ -2998,6 +3073,16 @@ function claimPending(s) {
 /* ===== 畫面與互動 ===== */
 const $ = id => document.getElementById(id);
 const format = n => Number(n).toLocaleString('en-US');
+// 精簡金額：10 萬以上改用「萬／億」（例：1,000,000 → 100萬、20,474,000 → 2,047.4萬）
+const compact = n => n >= 1e8 ? `${(n / 1e8).toLocaleString('en-US', { maximumFractionDigits: 2 })}億` : n >= 1e5 ? `${(n / 1e4).toLocaleString('en-US', { maximumFractionDigits: 2 })}萬` : format(n);
+const rewardText = e => `${format(e.amount)} ${REWARD_UNIT[e.rewardType]}`;
+// 球面上的獎項：數字＋幣別兩行，依幣別上色
+function paintOrbValue(el, e) {
+  const num = compact(e.amount);
+  el.dataset.type = e.rewardType;
+  el.classList.toggle('long', num.length > 6);
+  el.innerHTML = `<b>${num}</b><small>${REWARD_UNIT[e.rewardType]}</small>`;
+}
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const sleep = ms => new Promise(resolve => setTimeout(resolve, reducedMotion ? Math.min(ms, 30) : ms));
 const scene = $('scene');
@@ -3600,12 +3685,12 @@ shuffleOrbLooks();
 const tierButtons = TIERS.map((tier, index) => {
   const button = document.createElement('button'); button.type = 'button'; button.className = 'tier-button';
   button.style.setProperty('--tier-color', tier.color);
-  button.innerHTML = `<span class="tier-name">${tier.name}</span><span class="tier-factor">×${tier.multiplier}</span>`;
-  button.setAttribute('aria-label', `${tier.name}會員，${tier.multiplier}倍`);
+  button.innerHTML = `<span class="tier-name">${tier.name}</span><span class="tier-factor">${compact(topPrize(index).amount)}</span>`;
+  button.setAttribute('aria-label', `${tier.name}會員，最高 ${rewardText(topPrize(index))}`);
   button.addEventListener('click', () => {
     if (isAnimating() || s.pending) return;
     s.tierIndex = index; saveState(); renderTier(); tone(280 + index * 30, .18, 0, .07);
-    announce(`${tier.name}會員，獎勵 ${tier.multiplier} 倍。`);
+    announce(`${tier.name}會員獎池，最高 ${rewardText(topPrize(index))}。`);
   });
   $('tier-list').append(button); return button;
 });
@@ -3620,8 +3705,8 @@ function renderTier() {
   const tier = TIERS[s.tierIndex];
   document.documentElement.style.setProperty('--tier', tier.color);
   $('member-name').textContent = tier.name;
-  $('member-multiplier').textContent = `×${tier.multiplier}`;
-  $('max-reward').textContent = format(CONFIG.maxPrize * tier.multiplier);
+  $('member-multiplier').textContent = `${Math.round(starSilverRate(s.tierIndex) * 100)}%`;
+  $('max-reward').textContent = format(topPrize(s.tierIndex).amount);
   tierButtons.forEach((button, i) => { button.setAttribute('aria-pressed', String(i === s.tierIndex)); button.disabled = isAnimating() || !!s.pending; });
 }
 function renderMode() {
@@ -3657,17 +3742,17 @@ function renderControls() {
   renderTier(); renderMode();
 }
 function resetBalls() {
-  balls.forEach((b, i) => { b.classList.remove('selected', 'revealed'); b.querySelector('.orb-value').textContent = ''; b.setAttribute('aria-label', `選擇第 ${i + 1} 顆神力球`); });
+  balls.forEach((b, i) => { b.classList.remove('selected', 'revealed'); const v = b.querySelector('.orb-value'); v.textContent = ''; delete v.dataset.type; b.setAttribute('aria-label', `選擇第 ${i + 1} 顆神力球`); });
 }
 function showRecord(record) {
   shownRecord = record;
   const deck = Array.isArray(record.deck) && record.deck.length === balls.length ? record.deck : null;
   balls.forEach((b, i) => {
     b.classList.toggle('selected', i === record.ballIndex);
-    const value = deck ? deck[i] : i === record.ballIndex ? record.base : null;
-    b.classList.toggle('revealed', value !== null);
-    b.querySelector('.orb-value').textContent = value === null ? '' : format(value);
-    b.setAttribute('aria-label', `第 ${i + 1} 顆神力球${value === null ? '' : `，獎勵 ${format(value)}`}${i === record.ballIndex ? '，已選中' : ''}`);
+    const e = deck ? lootEntry(record.tierIndex, deck[i]) : i === record.ballIndex ? lootEntry(record.tierIndex, record.slotId) : null;
+    b.classList.toggle('revealed', !!e);
+    if (e) paintOrbValue(b.querySelector('.orb-value'), e); else b.querySelector('.orb-value').textContent = '';
+    b.setAttribute('aria-label', `第 ${i + 1} 顆神力球${e ? `，${rewardText(e)}` : ''}${i === record.ballIndex ? '，已選中' : ''}`);
   });
 }
 function syncAvailability() {
@@ -3691,8 +3776,7 @@ async function summon() {
   if (phase === 'result') { syncAvailability(); announce('畫面已重置，點選冰晶雷石再次召喚。'); return; }
   audioReady();
   const serial = ++roundSerial;
-  resetBalls(); shownRecord = null;
-  try { roundDeck = makeDeck(); } catch { toast('此瀏覽器無法產生亂數，請使用新版瀏覽器。'); return; }
+  resetBalls(); shownRecord = null; roundDeck = true; // 實際獎項在點選時才依會員獎池機率抽出
   // 第零段：三道落雷（上、左上 45°、右上 45°，順序隨機、粗細長短不一）注入雷石，雷石瞬間放大再淡出。
   striking = true; renderControls();
   await strikeCrystal(serial);
@@ -3741,7 +3825,7 @@ async function pickOrb(index) {
   try {
     await withLock(() => {
       refreshState();
-      s = createRound(s, roundDeck, index); record = s.pending;
+      s = createRound(s, makeDeck(s.tierIndex, index), index); record = s.pending;
       saveState();
     });
   } catch (error) { toast(error.message); syncAvailability(); return; }
@@ -3751,7 +3835,7 @@ async function pickOrb(index) {
   skyBolt(point, 650); burst(point, 70); shakeFrame(); if (!playSfx('thunder')) soundPick();
   announce(`選中第 ${index + 1} 顆神力球。`);
   await sleep(650);
-  button.classList.add('revealed'); button.querySelector('.orb-value').textContent = format(record.base);
+  button.classList.add('revealed'); paintOrbValue(button.querySelector('.orb-value'), lootEntry(record.tierIndex, record.slotId));
   tone(587, .8, 0, .16);
   await sleep(650);
   showRecord(record); setPhase('result');
@@ -3767,15 +3851,15 @@ function countTotal(total) {
   }
   rewardAnimation = requestAnimationFrame(frame);
 }
-// 報獎改在同一畫面的會員列位置顯示（不再彈出視窗）：神力球獎勵 × 會員加乘 ＝ 本次獲得，由左至右依序出現，領取按鈕在最右側
+// 報獎在同一畫面的會員列位置顯示：球圖 → 會員獎池 → 本次獲得（數字滾動＋幣別），由左至右依序出現，領取鍵在後
 const rewardOpen = () => $('membership').classList.contains('show-reward');
 function closeReward() { cancelAnimationFrame(rewardAnimation); $('membership').classList.remove('show-reward', 'reveal'); scene.classList.remove('reward-open'); }
 function openReward(record, animate = true) {
   const tier = TIERS[record.tierIndex];
-  $('reward-base').textContent = format(record.base);
-  $('reward-tier-label').textContent = `${tier.name}會員加乘`;
-  $('reward-factor').textContent = tier.multiplier;
-  $('reward-total').textContent = animate ? '0' : format(record.total);
+  $('reward-tier').textContent = tier.name;
+  $('reward-total').textContent = animate ? '0' : format(record.amount);
+  $('reward-unit').textContent = REWARD_UNIT[record.rewardType];
+  $('reward-total-item').dataset.type = record.rewardType;
   $('claim-button').disabled = false;
   // 報獎列左側放被點選的那顆神力球（原本的顏色與球名）
   const picked = balls[record.ballIndex];
@@ -3784,9 +3868,9 @@ function openReward(record, animate = true) {
   const bar = $('membership');
   bar.classList.remove('reveal'); void bar.offsetWidth;
   bar.classList.add('show-reward'); if (animate && !reducedMotion) bar.classList.add('reveal');
-  if (animate) { soundReward(); setTimeout(() => { if (rewardOpen()) countTotal(record.total); }, reducedMotion ? 0 : 800); }
+  if (animate) { soundReward(); setTimeout(() => { if (rewardOpen()) countTotal(record.amount); }, reducedMotion ? 0 : 550); }
   setTimeout(() => { if (rewardOpen()) $('claim-button').focus({ preventScroll: true }); }, animate && !reducedMotion ? 1250 : 0);
-  announce(`神力球獎勵 ${format(record.base)}，${tier.name} ${tier.multiplier} 倍，共獲得 ${format(record.total)}。`);
+  announce(`${tier.name}會員獎池，本次獲得 ${rewardText(record)}。`);
 }
 async function claimReward() {
   if (busyClaiming) return;
@@ -3800,7 +3884,7 @@ async function claimReward() {
       if (!playSfx('cheer')) { tone(784, .9, 0, .16); tone(1176, .6, .15, .06); }
       burst(localCenter($('summon-button')), 80);
       // 領取後不再跳提示視窗，改由螢幕朗讀告知
-      announce(`已領取 ${format(received.total)}${received.mode === 'demo' ? ' 試玩獎勵' : ' 獎勵'}`);
+      announce(`已領取 ${rewardText(received)}${received.mode === 'demo' ? '（試玩）' : ''}`);
     } else announce('獎勵已領取，紀錄已同步。');
     setPhase('result');
     if (s.mode === 'demo') $('summon-button').focus({ preventScroll: true }); else $('try-demo').focus({ preventScroll: true });
@@ -3825,7 +3909,7 @@ function openHistory() {
       const tier = TIERS[r.tierIndex], item = document.createElement('div'); item.className = 'history-item';
       const time = new Intl.DateTimeFormat('zh-TW', { timeZone: CONFIG.timezone, month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(r.createdAt));
       // 只插入經驗證過的固定列舉、數值與 Intl 日期，無外部 HTML。
-      item.innerHTML = `<div class="history-details"><span class="history-date">${time}<span class="mode-chip ${r.mode}">${r.mode === 'demo' ? '試玩' : '每日'}</span></span><span class="history-equation">${tier.name}・${format(r.base)} × ${tier.multiplier}・第 ${r.ballIndex + 1} 球</span></div><div class="history-result">+${format(r.total)}<span class="history-tag">${r.claimed ? '已領取' : '待領取'}</span></div>`;
+      item.innerHTML = `<div class="history-details"><span class="history-date">${time}<span class="mode-chip ${r.mode}">${r.mode === 'demo' ? '試玩' : '每日'}</span></span><span class="history-equation">${tier.name}會員獎池・第 ${r.ballIndex + 1} 球</span></div><div class="history-result">+${format(r.amount)} ${REWARD_UNIT[r.rewardType]}<span class="history-tag">${r.claimed ? '已領取' : '待領取'}</span></div>`;
       list.append(item);
     }
     host.append(list);
