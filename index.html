@@ -3028,6 +3028,38 @@ html.desk-scale body {
   transform-origin:0 0
 }
 
+/* 版頭移入舞台（桌機、筆電、平板與橫向手機）：品牌標誌疊在舞台左上、模式與功能鈕疊在舞台右上，
+   版頭不再佔用高度，舞台因此加高（--chrome-h 由程式依實際高度自動回寫）；手機直向仍維持在舞台上方 */
+@media (min-width:701px), (max-height:520px) {
+  .game-shell {
+    position:relative;
+    padding-top:10px
+  }
+  .topbar {
+    position:absolute;
+    z-index:8;
+    top:24px;
+    left:calc(var(--shell-pad) + 22px);
+    right:calc(var(--shell-pad) + 22px);
+    height:auto;
+    pointer-events:none
+  }
+  .topbar>* {
+    pointer-events:auto
+  }
+  .brand-name,.brand-en {
+    text-shadow:0 2px 6px #04142acc,0 0 14px #04142a99
+  }
+  .brand-emblem {
+    filter:drop-shadow(0 2px 6px #04142acc)
+  }
+  .top-tools .mode-badge,.top-tools .icon-button {
+    background:#0a2240b3;
+    backdrop-filter:blur(6px);
+    -webkit-backdrop-filter:blur(6px)
+  }
+}
+
 </style>
 </head>
 <body>
