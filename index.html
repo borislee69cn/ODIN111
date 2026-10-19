@@ -2914,6 +2914,165 @@ dialog[open] {
   }
 }
 
+/* 底部會員列（含等級按鈕與報獎列）：文字與數字統一使用粗體 */
+.membership,.membership * {
+  font-weight:700 !important
+}
+
+/* 底部等級標記框：兩顆光點沿框線巡遊（相差半圈＝一上一下），粒子中心落在 1px 框線正中央 */
+.tier-orbit {
+  position:absolute;
+  inset:-1px; /* 與按鈕外框（border-box）同大 */
+  display:none;
+  pointer-events:none;
+  z-index:2
+}
+
+.tier-button[aria-pressed="true"] .tier-orbit {
+  display:block
+}
+
+.tier-orbit b {
+  position:absolute;
+  top:0;
+  left:0;
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 0 4px 1px #fff,0 0 10px 3px var(--tier-color,#ffd88e),0 0 18px 4px color-mix(in srgb,var(--tier-color,#ffd88e) 55%,transparent);
+  offset-path:inset(.5px round 5px); /* 路徑落在框線中心（1px 邊框的 0.5px 處） */
+  offset-rotate:0deg;
+  offset-anchor:center;
+  animation:tierOrbit 6.4s linear infinite /* 一圈 6.4 秒（速度較前版降低 50%） */
+}
+
+.tier-orbit b+b {
+  animation-delay:-3.2s
+}
+
+@keyframes tierOrbit {
+  from { offset-distance:0% }
+  to { offset-distance:100% }
+}
+
+/* 不支援 offset-path 的瀏覽器：以四邊座標近似巡遊 */
+@supports not (offset-path:inset(0)) {
+  .tier-orbit b {
+    margin:-3px 0 0 -3px;
+    animation-name:tierOrbitFallback
+  }
+  @keyframes tierOrbitFallback {
+    0% { top:0; left:0 }
+    32% { top:0; left:100% }
+    50% { top:100%; left:100% }
+    82% { top:100%; left:0 }
+    100% { top:0; left:0 }
+  }
+}
+
+@media (prefers-reduced-motion:reduce) {
+  .tier-orbit b {
+    animation:none
+  }
+}
+
+/* 規則視窗的捲軸內嵌在視窗內：視窗本身不捲動，內容放在 .rules-scroll 中捲動；
+   捲軸細版、與視窗上下緣與右緣保留間距，不貼邊、不切到圓角 */
+#rules-dialog[open] {
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  padding-right:calc(32px * var(--rs) * .75 - 18px)
+}
+
+#rules-dialog .rules-scroll {
+  flex:1 1 auto;
+  min-height:0;
+  overflow-y:auto;
+  padding-right:18px;
+  overscroll-behavior:contain
+}
+
+/* Firefox 用標準屬性；Chrome／Safari 用下方 ::-webkit-scrollbar（兩者並用時 Chrome 會忽略自訂樣式，故分開） */
+@supports (-moz-appearance:none) {
+  #rules-dialog .rules-scroll {
+    scrollbar-width:thin;
+    scrollbar-color:#d4bd9299 transparent
+  }
+}
+
+#rules-dialog .rules-scroll::-webkit-scrollbar {
+  width:6px
+}
+
+#rules-dialog .rules-scroll::-webkit-scrollbar-track {
+  background:#ffffff0d;
+  border-radius:3px;
+  margin:4px 0
+}
+
+#rules-dialog .rules-scroll::-webkit-scrollbar-thumb {
+  background:#d4bd9299;
+  border-radius:3px
+}
+
+#rules-dialog .rules-scroll::-webkit-scrollbar-thumb:hover {
+  background:#e8cf9fcc
+}
+
+@media(max-width:700px) {
+  #rules-dialog[open] {
+    padding-right:8px
+  }
+  #rules-dialog .rules-scroll {
+    padding-right:12px
+  }
+}
+
+/* 規則視窗間距收斂（v3.0.6）：段落、列表、表格、注意事項與視窗內距約縮小 40～60%，字級不變 */
+#rules-dialog[open] {
+  padding-top:34px;
+  padding-bottom:22px
+}
+#rules-dialog h2 { margin:4px 0 14px }
+#rules-dialog .rules-list { gap:12px; margin-bottom:12px }
+#rules-dialog .rules-list li { margin-bottom:0 }
+#rules-dialog .rules-list p { margin-top:2px; line-height:1.5 }
+#rules-dialog .rules-tiers { margin:0 0 10px }
+#rules-dialog .rules-tiers th { padding:6px 10px }
+#rules-dialog .rules-tiers td { padding:4px 10px }
+#rules-dialog .rules-note { margin:10px 0 8px; padding:9px 14px }
+#rules-dialog .rules-note p { line-height:1.45; margin-top:2px }
+#rules-dialog .prototype-note { margin:8px 0 12px; line-height:1.5 }
+
+@media(max-width:700px) {
+  #rules-dialog[open] {
+    padding-top:30px;
+    padding-bottom:16px
+  }
+  #rules-dialog .rules-tiers th,#rules-dialog .rules-tiers td {
+    padding:4px 6px
+  }
+}
+
+/* 規則視窗捲軸貼近內框線（v3.0.7）：視窗右內距縮到 5px，捲軸緊靠右側框線；
+   文字右側另留內距，與左側留白對稱 */
+#rules-dialog[open] {
+  padding-right:5px
+}
+#rules-dialog .rules-scroll {
+  padding-right:calc(32px * var(--rs) * .75 - 11px)
+}
+@media(max-width:700px) {
+  #rules-dialog[open] {
+    padding-right:4px
+  }
+  #rules-dialog .rules-scroll {
+    padding-right:10px
+  }
+}
+
 </style>
 </head>
 <body>
@@ -2997,6 +3156,7 @@ dialog[open] {
 
   <dialog id="rules-dialog" class="panel-dialog" aria-labelledby="rules-title">
     <button class="dialog-close icon-button" data-close="rules-dialog" aria-label="關閉規則"><svg><use href="#i-close"/></svg></button>
+    <div class="rules-scroll">
     <span class="eyebrow">HOW TO PLAY</span><h2 id="rules-title">接受奧丁的賜福</h2>
     <ol class="rules-list">
       <li><span>01</span><div><strong>召喚神力</strong><p>點擊冰晶雷石，落雷擊碎雷石，十二顆神力球自四面八方飛入。</p></div></li>
@@ -3011,6 +3171,7 @@ dialog[open] {
     <div class="rules-note"><strong>每日 00:00 重置・30 天大獎週期</strong><p>以台灣時間（UTC+8）計算，每日模式一天一次。各等級最高獎項以 30 天為一個週期設計，平均每週期至少開出一次，但不保證每週期必定開出。選中後本次結果即確定。</p></div>
     <p class="prototype-note">互動原型：會員等級可自由切換，獎勵與每日紀錄保存在此瀏覽器，未串接會員帳號或正式發獎系統。自由試玩不消耗每日次數。獎池依《神力賜福 10 階級抽獎機率與成本配置表 v4》。</p>
     <button class="secondary-button full-width" data-close="rules-dialog">開始體驗</button>
+    </div>
   </dialog>
 
   <dialog id="settings-dialog" class="panel-dialog" aria-labelledby="settings-title">
@@ -3765,7 +3926,8 @@ shuffleOrbLooks();
 const tierButtons = TIERS.map((tier, index) => {
   const button = document.createElement('button'); button.type = 'button'; button.className = 'tier-button';
   button.style.setProperty('--tier-color', tier.color);
-  button.innerHTML = `<span class="tier-name">${tier.name}</span><span class="tier-factor">${compact(topPrize(index).amount)}</span>`;
+  // tier-orbit：選中時沿框線巡遊的兩顆粒子（一上一下，相差半圈）
+  button.innerHTML = `<span class="tier-name">${tier.name}</span><span class="tier-factor">${compact(topPrize(index).amount)}</span><i class="tier-orbit" aria-hidden="true"><b></b><b></b></i>`;
   button.setAttribute('aria-label', `${tier.name}會員，最高 ${rewardText(topPrize(index))}`);
   button.addEventListener('click', () => {
     if (isAnimating() || s.pending) return;
