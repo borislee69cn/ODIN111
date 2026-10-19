@@ -2222,7 +2222,7 @@ dialog[open] {
   }
 }
 
-@media(max-width:1200px) {
+@media(max-width:1200px) and (min-height:521px) {
   :root {
     --scene-cap:660px;
     --size-cap:117px
@@ -2261,7 +2261,7 @@ dialog[open] {
   }
 }
 
-@media(max-width:980px) {
+@media(max-width:980px) and (min-height:521px) {
   :root {
     --shell-pad:20px
   }
@@ -2362,7 +2362,7 @@ dialog[open] {
   }
 }
 
-@media(max-width:700px) {
+@media(max-width:700px) and (min-height:521px) {
   .game-shell {
     padding:0 12px 12px
   }
@@ -2703,7 +2703,7 @@ dialog[open] {
   }
 }
 
-@media(max-width:375px) {
+@media(max-width:375px) and (min-height:521px) {
   .game-shell {
     padding-inline:8px
   }
@@ -2794,68 +2794,6 @@ dialog[open] {
 }
 
 /* 橫向手機（寬 >700、高 ≤520）：縮小頂列、暫時收起等級列，舞台撐滿剩餘高度 */
-@media(min-width:701px) and (max-height:520px) {
-  :root {
-    --chrome-h:118px;
-    --scene-h:clamp(270px,calc(100dvh - var(--chrome-h)),var(--scene-cap));
-    --stage-ratio:3.4 /* 橫向手機維持滿版 */
-  }
-  .topbar {
-    height:46px
-  }
-  .brand-en {
-    display:none
-  }
-  .brand-name {
-    font-size:22px
-  }
-  .membership {
-    padding:7px 16px 8px
-  }
-  .member-summary {
-    margin-bottom:0
-  }
-  .tier-list {
-    display:none
-  }
-  /* 橫向手機會員列很矮：報獎項目改為「標籤＋數值」同一行、按鈕縮小 */
-  .rb-item {
-    flex-direction:row;
-    align-items:baseline;
-    gap:6px
-  }
-  .rb-label {
-    font-size:12px
-  }
-  .rb-value {
-    font-size:20px
-  }
-  .rb-total .rb-value {
-    font-size:26px
-  }
-  .reward-bar .claim-button {
-    min-width:140px;
-    min-height:38px;
-    font-size:16px;
-    letter-spacing:2px
-  }
-  .rb-orb {
-    width:42px
-  }
-  .rb-orb .orb-rune {
-    font-size:17px
-  }
-  .stat-label {
-    font-size:13px
-  }
-  .stat-value {
-    font-size:20px
-  }
-  .game-shell {
-    padding-bottom:6px
-  }
-}
-
 @media(prefers-reduced-motion:reduce) {
   *,*:before,*:after {
     animation-duration:.01ms!important;
@@ -2896,7 +2834,7 @@ dialog[open] {
 #rules-dialog .dialog-close svg { width:calc(16px * var(--rs) * .8); height:calc(16px * var(--rs) * .8) }
 
 /* 手機：字級不縮（維持最小 16px），只收窄內距；對照表欄距收緊 */
-@media(max-width:700px) {
+@media(max-width:700px) and (min-height:521px) {
   #rules-dialog {
     padding:40px 20px 24px
   }
@@ -3021,7 +2959,7 @@ dialog[open] {
   background:#e8cf9fcc
 }
 
-@media(max-width:700px) {
+@media(max-width:700px) and (min-height:521px) {
   #rules-dialog[open] {
     padding-right:8px
   }
@@ -3046,7 +2984,7 @@ dialog[open] {
 #rules-dialog .rules-note p { line-height:1.45; margin-top:2px }
 #rules-dialog .prototype-note { margin:8px 0 12px; line-height:1.5 }
 
-@media(max-width:700px) {
+@media(max-width:700px) and (min-height:521px) {
   #rules-dialog[open] {
     padding-top:30px;
     padding-bottom:16px
@@ -3064,13 +3002,30 @@ dialog[open] {
 #rules-dialog .rules-scroll {
   padding-right:calc(32px * var(--rs) * .75 - 11px)
 }
-@media(max-width:700px) {
+@media(max-width:700px) and (min-height:521px) {
   #rules-dialog[open] {
     padding-right:4px
   }
   #rules-dialog .rules-scroll {
     padding-right:10px
   }
+}
+
+/* 橫向手機：整頁以桌機版面渲染（寬＝視窗寬 ÷ 縮放比、高 800px），再整體縮放到視窗高度；
+   舞台高度固定為桌機值（800 − 版頭與會員列），不用 100dvh，避免縮放後重複計算 */
+html.desk-scale {
+  --scene-h:calc(800px - var(--chrome-h));
+  overflow:hidden;
+  height:100%
+}
+
+html.desk-scale body {
+  width:var(--dw);
+  height:800px;
+  min-height:0;
+  overflow:hidden;
+  transform:scale(var(--ds));
+  transform-origin:0 0
 }
 
 </style>
@@ -3314,6 +3269,25 @@ function claimPending(s) {
 /* ===== 畫面與互動 ===== */
 const $ = id => document.getElementById(id);
 const format = n => Number(n).toLocaleString('en-US');
+// 橫向手機（橫向且高 ≤ 520）：以桌機版面（設計高度 800px）整體等比縮小顯示，畫面配置、球體比例與等級列都與桌機一致
+const DESK_H = 800, deskScaleQuery = matchMedia('(orientation:landscape) and (max-height:520px)');
+function applyDeskScale() {
+  const root = document.documentElement, on = deskScaleQuery.matches;
+  root.classList.toggle('desk-scale', on);
+  if (on) { const k = innerHeight / DESK_H; root.style.setProperty('--ds', k); root.style.setProperty('--dw', `${innerWidth / k}px`); }
+}
+applyDeskScale();
+addEventListener('resize', applyDeskScale);
+// 版頭與會員列的實際高度（字體、粗體、換行都可能改變）回寫到 --chrome-h，讓舞台剛好填滿畫面、整頁不出現捲動
+function fitChrome() {
+  const shell = document.querySelector('.game-shell'), stage = document.getElementById('scene');
+  if (!shell || !stage) return;
+  const chrome = Math.ceil(shell.offsetHeight - stage.offsetHeight);
+  const root = document.documentElement, current = parseFloat(getComputedStyle(root).getPropertyValue('--chrome-h'));
+  if (chrome > 0 && Math.abs(chrome - current) >= 1) root.style.setProperty('--chrome-h', `${chrome}px`);
+}
+new ResizeObserver(fitChrome).observe(document.querySelector('.game-shell'));
+document.fonts?.ready.then(fitChrome);
 // 精簡金額：10 萬以上改用「萬／億」（例：1,000,000 → 100萬、20,474,000 → 2,047.4萬）
 const compact = n => n >= 1e8 ? `${(n / 1e8).toLocaleString('en-US', { maximumFractionDigits: 2 })}億` : n >= 1e5 ? `${(n / 1e4).toLocaleString('en-US', { maximumFractionDigits: 2 })}萬` : format(n);
 const rewardText = e => `${format(e.amount)} ${REWARD_UNIT[e.rewardType]}`;
@@ -3545,10 +3519,13 @@ window.addEventListener('keydown', kickBgm, true);
 const canvas = $('fx-canvas');
 const ctx = canvas.getContext('2d');
 let fxWidth = 1, fxHeight = 1, effects = [], fxFrame = 0;
+// 視覺縮放比（橫向手機以桌機版面等比縮小顯示時 < 1）：特效座標一律用版面像素，量測值需除以此比例
+const viewScale = () => (scene.getBoundingClientRect().width / scene.clientWidth) || 1;
 function sizeCanvas() {
-  const r = scene.getBoundingClientRect(); const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  fxWidth = r.width; fxHeight = r.height; canvas.width = Math.round(r.width * dpr); canvas.height = Math.round(r.height * dpr);
-  ctx?.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const k = viewScale(), dpr = Math.min(window.devicePixelRatio || 1, 2);
+  fxWidth = scene.clientWidth; fxHeight = scene.clientHeight;
+  canvas.width = Math.round(fxWidth * dpr * k); canvas.height = Math.round(fxHeight * dpr * k);
+  ctx?.setTransform(dpr * k, 0, 0, dpr * k, 0, 0);
   placeTablet();
 }
 // 閒置時的冰晶雷石要漂浮在背景圖（1730×909）門庭中央、階梯上方的天空區；
@@ -3559,7 +3536,7 @@ function placeTablet() {
   const w = scene.clientWidth, h = scene.clientHeight;
   if (!w || !h) return;
   const scale = Math.max(w / SCENE_BG.w, h / SCENE_BG.h);
-  const posY = matchMedia('(max-width:700px)').matches ? .62 : .58;
+  const posY = matchMedia('(max-width:700px) and (min-height:521px)').matches ? .62 : .58;
   const ox = (w - SCENE_BG.w * scale) / 2, oy = (h - SCENE_BG.h * scale) * posY;
   // 位置變數同時寫在雷石與舞台上，讓雷石上方的「奧丁祝福」標題也能對齊
   for (const style of [$('summon-button').style, scene.style]) {
@@ -3576,13 +3553,14 @@ function placeIdleTitle() {
   const t = document.querySelector('.scene-title img').getBoundingClientRect(), box = scene.getBoundingClientRect();
   if (prev !== 'set') { scene.dataset.stage = prev; scene.classList.remove('measuring'); }
   if (!t.height) return;
-  scene.style.setProperty('--idle-title-x', `${Math.round(t.left + t.width / 2 - box.left)}px`);
-  scene.style.setProperty('--idle-title-y', `${Math.round(t.top + t.height / 2 - box.top)}px`);
+  const k = viewScale();
+  scene.style.setProperty('--idle-title-x', `${Math.round((t.left + t.width / 2 - box.left) / k)}px`);
+  scene.style.setProperty('--idle-title-y', `${Math.round((t.top + t.height / 2 - box.top) / k)}px`);
 }
 new ResizeObserver(() => { sizeCanvas(); if (scene.dataset.stage === 'set' && typeof layoutOrbs === 'function') layoutOrbs(); }).observe(scene);
 function localCenter(element) {
-  const a = element.getBoundingClientRect(), b = scene.getBoundingClientRect();
-  return { x: a.left + a.width / 2 - b.left, y: a.top + a.height / 2 - b.top };
+  const a = element.getBoundingClientRect(), b = scene.getBoundingClientRect(), k = viewScale();
+  return { x: (a.left + a.width / 2 - b.left) / k, y: (a.top + a.height / 2 - b.top) / k };
 }
 function addBolt(to, duration = 370, from = { x: fxWidth / 2, y: 0 }, width = 4, taper = false, grow = 0) {
   if (reducedMotion || !ctx) return;
@@ -3832,14 +3810,15 @@ function paintFx(now) {
 }
 async function strikeCrystal(serial) {
   const button = $('summon-button');
-  const box = button.getBoundingClientRect(), sc = scene.getBoundingClientRect();
-  const target = { x: box.left + box.width / 2 - sc.left, y: box.top + box.height * .4 - sc.top };
-  const center = { x: box.left + box.width / 2 - sc.left, y: box.top + box.height / 2 - sc.top };
+  const k = viewScale(), raw = button.getBoundingClientRect(), sc = scene.getBoundingClientRect();
+  const box = { left: (raw.left - sc.left) / k, top: (raw.top - sc.top) / k, width: raw.width / k, height: raw.height / k };
+  const target = { x: box.left + box.width / 2, y: box.top + box.height * .4 };
+  const center = { x: box.left + box.width / 2, y: box.top + box.height / 2 };
   // 單道錐形落雷：起點在舞台頂端正上方（整段都在畫面內），天空端粗 36～64px，越接近雷石越細，雷石瞬間放大再縮回原比例
   const reactions = ['shake-small', 'shake-big', 'pop'];
   const width = 36 + Math.random() * 28, from = { x: target.x + (Math.random() - .5) * 60, y: -40 };
   // 落雷由天空往下延伸（160ms），雷頭一碰到雷石頂端就立刻炸開，不再等待
-  const grow = 160, touch = Math.max(0, Math.min(1, (box.top - sc.top - from.y) / (target.y - from.y)));
+  const grow = 160, touch = Math.max(0, Math.min(1, (box.top - from.y) / (target.y - from.y)));
   addBolt(target, 420, from, width, true, grow);
   if (!playSfx('thunder')) soundStrike(width);
   await sleep(Math.round(grow * touch));
@@ -3886,7 +3865,7 @@ const archNeighbours = [];
 for (let k = 0; k < 6; k++) archNeighbours.push([ARCH_OUTER[k], ARCH_OUTER[k + 1]]);
 for (let k = 0; k < 4; k++) archNeighbours.push([ARCH_INNER[k], ARCH_INNER[k + 1]]);
 for (let k = 0; k < 5; k++) for (let d = 0; d < 3; d++) archNeighbours.push([ARCH_INNER[k], ARCH_OUTER[k + d]]);
-const archQuery = matchMedia('(min-width:701px)');
+const archQuery = matchMedia('(min-width:701px), (orientation:landscape) and (max-height:520px)'); // 桌機與橫向手機（等比縮小的桌機版面）用拱形
 const OUTER_SPREAD = .8; // 上排（外圈）球距比例
 // 雙層拱形排列（正圓同心弧）：
 // 外圈 7 顆等角（＝等弧長）分布在大圓弧上，兩端下垂 2.2 顆球高；內圈 5 顆在同圓心、半徑少 1.5 顆球的弧上，
