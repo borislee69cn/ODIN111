@@ -3060,6 +3060,23 @@ html.desk-scale body {
   }
 }
 
+/* 神力球開獎資訊：數字與幣別統一粗體，並等比放大 10%（數字 1em → 1.1em、幣別 .52em → .572em、長數字 .82em → .902em） */
+.orb-value,.orb-value b,.orb-value small {
+  font-weight:700
+}
+.orb-value b {
+  font-size:1.1em
+}
+.orb-value small {
+  font-size:.572em
+}
+.orb-value.long b {
+  font-size:.902em
+}
+.orb-value.xlong b {
+  font-size:.78em
+}
+
 </style>
 </head>
 <body>
@@ -3328,7 +3345,11 @@ function paintOrbValue(el, e) {
   const num = compact(e.amount);
   el.dataset.type = e.rewardType;
   el.classList.toggle('long', num.length > 6);
+  el.classList.toggle('xlong', num.length > 7); // 例：1,042.5萬
   el.innerHTML = `<b>${num}</b><small>${REWARD_UNIT[e.rewardType]}</small>`;
+  // 小尺寸球（手機直向）若數字仍超出球面 92% 寬，只縮這一顆的數字到剛好放得下
+  const b = el.firstElementChild, glass = el.closest('.orb-button')?.querySelector('.orb-glass');
+  if (glass && b.offsetWidth > glass.clientWidth * .92) b.style.fontSize = `${(parseFloat(getComputedStyle(b).fontSize) * glass.clientWidth * .92 / b.offsetWidth).toFixed(2)}px`;
 }
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const sleep = ms => new Promise(resolve => setTimeout(resolve, reducedMotion ? Math.min(ms, 30) : ms));
