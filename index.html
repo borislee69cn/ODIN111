@@ -1609,6 +1609,35 @@ dialog[open] {
   margin:6px 0 0
 }
 
+/* 規則說明：各等級星／銀幣中獎率與最高獎項 */
+.rules-tiers {
+  width:100%;
+  margin:4px 0 16px;
+  border-collapse:collapse;
+  font-size:13px;
+  color:#c9d6e8
+}
+
+.rules-tiers th {
+  padding:6px 8px;
+  font-weight:600;
+  font-size:12px;
+  letter-spacing:1px;
+  color:#e8cf9f;
+  text-align:left;
+  border-bottom:1px solid #ffffff22
+}
+
+.rules-tiers td {
+  padding:5px 8px;
+  border-bottom:1px solid #ffffff10;
+  font-variant-numeric:tabular-nums
+}
+
+.rules-tiers th:not(:first-child),.rules-tiers td:not(:first-child) {
+  text-align:right
+}
+
 .rules-note {
   border-left:2px solid #d8b976;
   background:#081d302b;
@@ -2843,6 +2872,48 @@ dialog[open] {
   }
 }
 
+/* 遊戲規則視窗：全部字級依原比例放大 16/9 ≈ 1.78 倍，最小字（HOW TO PLAY）由 9px → 16px，其餘等比例放大；視窗同步加寬以維持行長 */
+#rules-dialog {
+  --rs:1.78;
+  width:min(860px,calc(100% - 28px));
+  padding:calc(37px * var(--rs) * .75) calc(32px * var(--rs) * .75) calc(28px * var(--rs) * .75)
+}
+
+#rules-dialog .eyebrow { font-size:16px; letter-spacing:calc(3px * var(--rs)) }
+#rules-dialog h2 { font-size:calc(25px * var(--rs)) }
+#rules-dialog .rules-list li>span { flex:0 0 1.35em; font-size:calc(22px * var(--rs)); line-height:1.2 } /* 序號固定寬度，四段說明文字左緣對齊 */
+#rules-dialog .rules-list strong { font-size:calc(14px * var(--rs)); letter-spacing:calc(1px * var(--rs)) }
+#rules-dialog .rules-list p { font-size:calc(12px * var(--rs)); line-height:1.75 }
+#rules-dialog .rules-list li { gap:calc(16px * var(--rs)); margin-bottom:calc(14px * var(--rs)) }
+#rules-dialog .rules-tiers { font-size:calc(13px * var(--rs)) }
+#rules-dialog .rules-tiers th { font-size:calc(12px * var(--rs)); letter-spacing:calc(1px * var(--rs)); padding:10px 12px }
+#rules-dialog .rules-tiers td { padding:8px 12px }
+#rules-dialog .rules-note strong { font-size:calc(12px * var(--rs)) }
+#rules-dialog .rules-note p { font-size:calc(11px * var(--rs)); line-height:1.7 }
+#rules-dialog .prototype-note { font-size:calc(11px * var(--rs)); line-height:1.75 }
+#rules-dialog .secondary-button { font-size:calc(13px * var(--rs)); letter-spacing:calc(2px * var(--rs)); min-height:calc(44px * var(--rs) * .8) }
+#rules-dialog .dialog-close { width:calc(36px * var(--rs) * .8); height:calc(36px * var(--rs) * .8) }
+#rules-dialog .dialog-close svg { width:calc(16px * var(--rs) * .8); height:calc(16px * var(--rs) * .8) }
+
+/* 手機：字級不縮（維持最小 16px），只收窄內距；對照表欄距收緊 */
+@media(max-width:700px) {
+  #rules-dialog {
+    padding:40px 20px 24px
+  }
+  #rules-dialog .rules-list li {
+    gap:14px
+  }
+  #rules-dialog .rules-list li>span {
+    font-size:30px
+  }
+  #rules-dialog h2 {
+    font-size:34px
+  }
+  #rules-dialog .rules-tiers th,#rules-dialog .rules-tiers td {
+    padding:8px 6px
+  }
+}
+
 </style>
 </head>
 <body>
@@ -2927,9 +2998,18 @@ dialog[open] {
   <dialog id="rules-dialog" class="panel-dialog" aria-labelledby="rules-title">
     <button class="dialog-close icon-button" data-close="rules-dialog" aria-label="關閉規則"><svg><use href="#i-close"/></svg></button>
     <span class="eyebrow">HOW TO PLAY</span><h2 id="rules-title">接受奧丁的賜福</h2>
-    <ol class="rules-list"><li><span>01</span><div><strong>召喚神力</strong><p>雷石受雷擊炸開，召喚十二顆神力球。</p></div></li><li><span>02</span><div><strong>選擇命運</strong><p>任選一顆，依會員等級的專屬獎池機率開出星幣、銀幣或銅幣獎項；其餘 11 顆同步揭曉本級的其他獎項。</p></div></li><li><span>03</span><div><strong>會員獎池</strong><p>青銅至星曜共 10 級，等級越高，星／銀幣中獎率與獎額越高（青銅 18% 至星曜 90%）；最高獎項為星曜 20,474,000 星幣。</p></div></li></ol>
-    <div class="rules-note"><strong>每日 00:00 重置</strong><p>以台灣時間（UTC+8）計算，每日模式一天一次。球的顏色與位置不影響機率，選中後本次結果即確定。</p></div>
-    <p class="prototype-note">互動原型：會員等級可自由切換，獎勵與每日紀錄保存在此瀏覽器，未串接會員帳號或正式發獎系統。自由試玩不消耗每日次數。</p>
+    <ol class="rules-list">
+      <li><span>01</span><div><strong>召喚神力</strong><p>點擊冰晶雷石，落雷擊碎雷石，十二顆神力球自四面八方飛入。</p></div></li>
+      <li><span>02</span><div><strong>選擇命運</strong><p>任選一顆，依會員等級的專屬獎池機率開出獎項；其餘 11 顆同步揭曉本級的其他獎項。球上的字與顏色每次召喚隨機排列，不影響結果。</p></div></li>
+      <li><span>03</span><div><strong>領取獎勵</strong><p>結果顯示在畫面下方的報獎列，按「領取獎勵」即入帳；星幣、銀幣、銅幣分別累計。</p></div></li>
+      <li><span>04</span><div><strong>會員獎池</strong><p>10 個等級各有 12 格獎項，包含星幣、銀幣（100 銀幣＝1 星幣）與銅幣。等級越高，星／銀幣中獎率與獎額越高。</p></div></li>
+    </ol>
+    <table class="rules-tiers" aria-label="各等級星／銀幣中獎率與最高獎項">
+      <thead><tr><th>等級</th><th>星／銀幣中獎率</th><th>最高獎項（星幣）</th></tr></thead>
+      <tbody id="rules-tiers-body"></tbody>
+    </table>
+    <div class="rules-note"><strong>每日 00:00 重置・30 天大獎週期</strong><p>以台灣時間（UTC+8）計算，每日模式一天一次。各等級最高獎項以 30 天為一個週期設計，平均每週期至少開出一次，但不保證每週期必定開出。選中後本次結果即確定。</p></div>
+    <p class="prototype-note">互動原型：會員等級可自由切換，獎勵與每日紀錄保存在此瀏覽器，未串接會員帳號或正式發獎系統。自由試玩不消耗每日次數。獎池依《神力賜福 10 階級抽獎機率與成本配置表 v4》。</p>
     <button class="secondary-button full-width" data-close="rules-dialog">開始體驗</button>
   </dialog>
 
@@ -3695,6 +3775,8 @@ const tierButtons = TIERS.map((tier, index) => {
   $('tier-list').append(button); return button;
 });
 
+// 規則說明的等級對照表：直接由獎池資料產生，與實際抽獎設定保持一致
+$('rules-tiers-body').innerHTML = TIERS.map((tier, i) => `<tr><td>${tier.name}</td><td>${Math.round(starSilverRate(i) * 100)}%</td><td>${format(topPrize(i).amount)}</td></tr>`).join('');
 function renderSound() {
   $('sound-button').setAttribute('aria-pressed', String(s.sound));
   $('sound-button').setAttribute('aria-label', s.sound ? '關閉音效' : '開啟音效');
