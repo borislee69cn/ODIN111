@@ -3582,7 +3582,6 @@ html.desk-scale body {
   width:min(100%,86px); aspect-ratio:300 / 256; padding:0; display:grid; place-items:center; /* 新凹槽：深藍灰石壁嵌入凹槽（約 1.17:1） */
   background:var(--slate-socket) center/contain no-repeat; border:0; border-radius:10px; box-shadow:none
 }
-.membership .tier-button:before { display:none }
 .membership .tier-button:enabled:hover { background:var(--slate-socket) center/contain no-repeat; filter:brightness(1.12) }
 .membership .tier-button[aria-pressed="true"] { background:var(--slate-socket) center/contain no-repeat }
 /* 選中等級：光效填滿凹槽內緣（等級色），在 VIP 圖示後方由下往上持續流動；亮度固定，不做呼吸 */
@@ -3593,16 +3592,27 @@ html.desk-scale body {
   -webkit-mask-image:radial-gradient(ellipse 70% 74% at 50% 50%,#000 58%,rgba(0,0,0,.8) 72%,rgba(0,0,0,.35) 88%,transparent 100%);
   mask-image:radial-gradient(ellipse 70% 74% at 50% 50%,#000 58%,rgba(0,0,0,.8) 72%,rgba(0,0,0,.35) 88%,transparent 100%);
   filter:blur(2px);
-  background:
-    repeating-linear-gradient(0deg,transparent 0,color-mix(in srgb,var(--tier) 30%,transparent) 14%,color-mix(in srgb,var(--tier) 75%,#fff) 25%,color-mix(in srgb,var(--tier) 30%,transparent) 36%,transparent 50%) 0 0/100% 200%,
-    linear-gradient(0deg,color-mix(in srgb,var(--tier) 55%,transparent),color-mix(in srgb,var(--tier) 25%,transparent));
+  background:linear-gradient(0deg,color-mix(in srgb,var(--tier) 55%,transparent),color-mix(in srgb,var(--tier) 25%,transparent));
   transition:opacity .3s ease
 }
-.membership .tier-button[aria-pressed="true"]:after { opacity:.9; animation:vipFlow 2.4s linear infinite }
+.membership .tier-button[aria-pressed="true"]:after { opacity:.9 }
+/* 流動光帶：不規則波浪形（非水平直線），以遮罩塑形後由下往上流動；同樣柔焦淡出邊緣 */
+.membership .tier-button:before {
+  content:""; display:block; position:absolute; z-index:0; pointer-events:none; opacity:0;
+  inset:1% 1% .5% 1%; width:auto; height:auto; border-radius:20% / 24%; /* 覆蓋舊版按鈕頂端裝飾線的尺寸設定 */
+  background:color-mix(in srgb,var(--tier) 70%,#fff);
+  -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 400' preserveAspectRatio='none'%3E%3Cfilter id='b' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeGaussianBlur stdDeviation='9'/%3E%3C/filter%3E%3Cg fill='%23fff' filter='url(%23b)'%3E%3Cpath d='M0.0,88.7 L5.0,93.7 L10.0,96.5 L15.0,96.9 L20.0,95.4 L25.0,92.4 L30.0,88.9 L35.0,85.6 L40.0,83.3 L45.0,82.3 L50.0,82.4 L55.0,83.3 L60.0,84.1 L65.0,84.2 L70.0,82.8 L75.0,79.8 L80.0,75.1 L85.0,69.3 L90.0,63.3 L95.0,58.0 L100.0,54.4 L105.0,53.0 L110.0,54.2 L115.0,57.6 L120.0,62.7 L125.0,68.6 L130.0,74.3 L135.0,79.0 L140.0,82.1 L145.0,83.5 L150.0,83.5 L155.0,82.7 L160.0,82.0 L165.0,81.9 L170.0,83.0 L175.0,85.3 L180.0,88.7 L185.0,92.3 L190.0,95.5 L195.0,97.2 L200.0,97.0 L200.0,119.3 L195.0,116.3 L190.0,111.8 L185.0,107.4 L180.0,105.0 L175.0,106.1 L170.0,110.8 L165.0,118.0 L160.0,125.6 L155.0,131.6 L150.0,134.6 L145.0,134.4 L140.0,132.2 L135.0,129.7 L130.0,128.5 L125.0,129.5 L120.0,132.3 L115.0,135.6 L110.0,137.4 L105.0,136.3 L100.0,131.8 L95.0,124.7 L90.0,116.8 L85.0,110.4 L80.0,107.1 L75.0,107.2 L70.0,110.1 L65.0,114.1 L60.0,117.2 L55.0,118.3 L50.0,117.2 L45.0,115.1 L40.0,113.6 L35.0,114.4 L30.0,118.3 L25.0,124.8 L20.0,132.2 L15.0,138.5 L10.0,141.8 L5.0,141.4 L0.0,137.8 Z'/%3E%3Cpath d='M0.0,288.7 L5.0,293.7 L10.0,296.5 L15.0,296.9 L20.0,295.4 L25.0,292.4 L30.0,288.9 L35.0,285.6 L40.0,283.3 L45.0,282.3 L50.0,282.4 L55.0,283.3 L60.0,284.1 L65.0,284.2 L70.0,282.8 L75.0,279.8 L80.0,275.1 L85.0,269.3 L90.0,263.3 L95.0,258.0 L100.0,254.4 L105.0,253.0 L110.0,254.2 L115.0,257.6 L120.0,262.7 L125.0,268.6 L130.0,274.3 L135.0,279.0 L140.0,282.1 L145.0,283.5 L150.0,283.5 L155.0,282.7 L160.0,282.0 L165.0,281.9 L170.0,283.0 L175.0,285.3 L180.0,288.7 L185.0,292.3 L190.0,295.5 L195.0,297.2 L200.0,297.0 L200.0,319.3 L195.0,316.3 L190.0,311.8 L185.0,307.4 L180.0,305.0 L175.0,306.1 L170.0,310.8 L165.0,318.0 L160.0,325.6 L155.0,331.6 L150.0,334.6 L145.0,334.4 L140.0,332.2 L135.0,329.7 L130.0,328.5 L125.0,329.5 L120.0,332.3 L115.0,335.6 L110.0,337.4 L105.0,336.3 L100.0,331.8 L95.0,324.7 L90.0,316.8 L85.0,310.4 L80.0,307.1 L75.0,307.2 L70.0,310.1 L65.0,314.1 L60.0,317.2 L55.0,318.3 L50.0,317.2 L45.0,315.1 L40.0,313.6 L35.0,314.4 L30.0,318.3 L25.0,324.8 L20.0,332.2 L15.0,338.5 L10.0,341.8 L5.0,341.4 L0.0,337.8 Z'/%3E%3C/g%3E%3C/svg%3E"),radial-gradient(ellipse 70% 74% at 50% 50%,#000 58%,rgba(0,0,0,.8) 72%,rgba(0,0,0,.35) 88%,transparent 100%);
+  mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 400' preserveAspectRatio='none'%3E%3Cfilter id='b' x='-20%25' y='-20%25' width='140%25' height='140%25'%3E%3CfeGaussianBlur stdDeviation='9'/%3E%3C/filter%3E%3Cg fill='%23fff' filter='url(%23b)'%3E%3Cpath d='M0.0,88.7 L5.0,93.7 L10.0,96.5 L15.0,96.9 L20.0,95.4 L25.0,92.4 L30.0,88.9 L35.0,85.6 L40.0,83.3 L45.0,82.3 L50.0,82.4 L55.0,83.3 L60.0,84.1 L65.0,84.2 L70.0,82.8 L75.0,79.8 L80.0,75.1 L85.0,69.3 L90.0,63.3 L95.0,58.0 L100.0,54.4 L105.0,53.0 L110.0,54.2 L115.0,57.6 L120.0,62.7 L125.0,68.6 L130.0,74.3 L135.0,79.0 L140.0,82.1 L145.0,83.5 L150.0,83.5 L155.0,82.7 L160.0,82.0 L165.0,81.9 L170.0,83.0 L175.0,85.3 L180.0,88.7 L185.0,92.3 L190.0,95.5 L195.0,97.2 L200.0,97.0 L200.0,119.3 L195.0,116.3 L190.0,111.8 L185.0,107.4 L180.0,105.0 L175.0,106.1 L170.0,110.8 L165.0,118.0 L160.0,125.6 L155.0,131.6 L150.0,134.6 L145.0,134.4 L140.0,132.2 L135.0,129.7 L130.0,128.5 L125.0,129.5 L120.0,132.3 L115.0,135.6 L110.0,137.4 L105.0,136.3 L100.0,131.8 L95.0,124.7 L90.0,116.8 L85.0,110.4 L80.0,107.1 L75.0,107.2 L70.0,110.1 L65.0,114.1 L60.0,117.2 L55.0,118.3 L50.0,117.2 L45.0,115.1 L40.0,113.6 L35.0,114.4 L30.0,118.3 L25.0,124.8 L20.0,132.2 L15.0,138.5 L10.0,141.8 L5.0,141.4 L0.0,137.8 Z'/%3E%3Cpath d='M0.0,288.7 L5.0,293.7 L10.0,296.5 L15.0,296.9 L20.0,295.4 L25.0,292.4 L30.0,288.9 L35.0,285.6 L40.0,283.3 L45.0,282.3 L50.0,282.4 L55.0,283.3 L60.0,284.1 L65.0,284.2 L70.0,282.8 L75.0,279.8 L80.0,275.1 L85.0,269.3 L90.0,263.3 L95.0,258.0 L100.0,254.4 L105.0,253.0 L110.0,254.2 L115.0,257.6 L120.0,262.7 L125.0,268.6 L130.0,274.3 L135.0,279.0 L140.0,282.1 L145.0,283.5 L150.0,283.5 L155.0,282.7 L160.0,282.0 L165.0,281.9 L170.0,283.0 L175.0,285.3 L180.0,288.7 L185.0,292.3 L190.0,295.5 L195.0,297.2 L200.0,297.0 L200.0,319.3 L195.0,316.3 L190.0,311.8 L185.0,307.4 L180.0,305.0 L175.0,306.1 L170.0,310.8 L165.0,318.0 L160.0,325.6 L155.0,331.6 L150.0,334.6 L145.0,334.4 L140.0,332.2 L135.0,329.7 L130.0,328.5 L125.0,329.5 L120.0,332.3 L115.0,335.6 L110.0,337.4 L105.0,336.3 L100.0,331.8 L95.0,324.7 L90.0,316.8 L85.0,310.4 L80.0,307.1 L75.0,307.2 L70.0,310.1 L65.0,314.1 L60.0,317.2 L55.0,318.3 L50.0,317.2 L45.0,315.1 L40.0,313.6 L35.0,314.4 L30.0,318.3 L25.0,324.8 L20.0,332.2 L15.0,338.5 L10.0,341.8 L5.0,341.4 L0.0,337.8 Z'/%3E%3C/g%3E%3C/svg%3E"),radial-gradient(ellipse 70% 74% at 50% 50%,#000 58%,rgba(0,0,0,.8) 72%,rgba(0,0,0,.35) 88%,transparent 100%);
+  -webkit-mask-size:100% 200%,100% 100%; mask-size:100% 200%,100% 100%;
+  -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
+  -webkit-mask-composite:source-in; mask-composite:intersect;
+  filter:blur(1px); transition:opacity .3s ease
+}
+.membership .tier-button[aria-pressed="true"]:before { opacity:.95; animation:vipFlowWave 2.6s linear infinite }
 .membership .tier-button .tier-vip { position:relative; z-index:1 }
 /* 光帶圖高為凹槽兩倍、每半張重複一次：由 0% 位移到 100% 剛好上移一個凹槽高度，循環無接縫 */
-@keyframes vipFlow { from { background-position:0 0%,0 0 } to { background-position:0 100%,0 0 } }
-@media (prefers-reduced-motion:reduce) { .membership .tier-button[aria-pressed="true"]:after { animation:none } }
+@keyframes vipFlowWave { from { -webkit-mask-position:0 0%,0 0; mask-position:0 0%,0 0 } to { -webkit-mask-position:0 100%,0 0; mask-position:0 100%,0 0 } }
+@media (prefers-reduced-motion:reduce) { .membership .tier-button[aria-pressed="true"]:before { animation:none } }
 /* 凹槽內緣約佔外形寬度 86%；VIP 圖示放大到外形寬度 84%（≈ 內緣 98%），與石壁之間只留細縫，置中 */
 .membership .tier-button.has-vip .tier-vip { height:auto; width:84%; filter:drop-shadow(0 2px 3px #000c) }
 .membership .tier-button.has-vip:not([aria-pressed="true"]) .tier-vip { filter:drop-shadow(0 2px 3px #000c) saturate(.85) brightness(.85) }
@@ -3671,6 +3681,11 @@ html.desk-scale body {
   .membership .tier-button { width:min(100%,56px) }
   .membership .tier-list { gap:6px }
 }
+
+/* 畫面上下平衡：底端內距與頂端相同（10px）；舞台到達高度上限、視窗仍有餘裕時，
+   由 game.js 以 --shell-offset 把整個遊戲區往下推到垂直置中（上下留白相等） */
+.game-shell { padding-bottom:10px; margin-top:var(--shell-offset,0px) }
+body { display:flow-root } /* 防止置中用的上邊距穿透到 body 外而多出捲動 */
 
 </style>
 </head>
@@ -4300,7 +4315,11 @@ function fitChrome() {
   const chrome = Math.ceil(shell.offsetHeight - stage.offsetHeight);
   const root = document.documentElement, current = parseFloat(getComputedStyle(root).getPropertyValue('--chrome-h'));
   if (chrome > 0 && Math.abs(chrome - current) >= 1) root.style.setProperty('--chrome-h', `${chrome}px`);
+  // 垂直置中：視窗高於遊戲區時，把多出的空間平分到上下（橫向手機縮放模式不需要）
+  const spare = root.classList.contains('desk-scale') ? 0 : Math.max(0, Math.floor((innerHeight - shell.offsetHeight) / 2));
+  if (Math.abs(spare - (parseFloat(root.style.getPropertyValue('--shell-offset')) || 0)) >= 1) root.style.setProperty('--shell-offset', `${spare}px`);
 }
+addEventListener('resize', () => requestAnimationFrame(fitChrome));
 new ResizeObserver(fitChrome).observe(document.querySelector('.game-shell'));
 document.fonts?.ready.then(fitChrome);
 // 精簡金額：10 萬以上改用「萬／億」（例：1,000,000 → 100萬、20,474,000 → 2,047.4萬）
