@@ -3656,6 +3656,22 @@ html.desk-scale body {
 /* 數值列固定為 1em 高，放大的數字不會把整列撐高，左右兩組的基線因此一致 */
 .membership .reward-bar .rb-value { display:block; height:1em; white-space:nowrap }
 
+/* 石板高度收斂回原本素色會員列的高度（桌機約 130px），造型不變：
+   內距縮小、資訊凹槽邊框依比例縮細、符文帶與方槽略縮 */
+.membership { padding:12px 26px 12px }
+.membership .member-summary { margin-bottom:8px; gap:16px }
+.info-groove { min-height:0; padding:0 6px; border-width:9px 13px }
+.rune-band { height:30px }
+.membership .tier-button { width:min(100%,64px) }
+@media(max-width:700px) and (min-height:521px) {
+  .membership { padding:12px 14px 10px }
+  .info-groove { border-width:8px 11px }
+  .rune-band { height:18px }
+  .membership .member-summary { margin-bottom:6px; gap:2px 12px }
+  .membership .tier-button { width:min(100%,56px) }
+  .membership .tier-list { gap:6px }
+}
+
 </style>
 </head>
 <body>
